@@ -7,14 +7,14 @@ export class WorldSimulation{
  private spawnTimer=0;private resourceTimer=0;private trainTimer=0;private seasonSeen=0;
  constructor(public state:GameState,public time:TimeManager){this.seasonSeen=state.seasonIndex||0}
  update(dt:number){
-  const s=this.state;tweakState(s);t.update(dt);
-  s.time=t.elapsed;s.day=t.day;s.seasonIndex=t.seasonIndex;s.weather=t.weather;
+  const s=this.state;tweakState(s);this.time.update(dt);
+  s.time=this.time.elapsed;s.day=this.time.day;s.seasonIndex=this.time.seasonIndex;s.weather=this.time.weather;
   this.player(dt);this.aiVillagers(dt);this.aiAnimals(dt);this.growCrops(dt);this.economy(dt);this.night(dt);this.defenses(dt);this.projectiles(dt);
   if(this.attack){this.attack=false;this.melee()}if(this.coin){this.coin=false;this.recruit()}if(this.build){this.build=false;this.place()}if(this.upgrade){this.upgrade=false;this.castleUpgrade()}
   this.cleanup();
  }
  player(dt:number){
-  const s=this.state,p=s.player;const desired=this.moveX*155*(tweak(this.time));p.vx+=(desired-p.vx)*Math.min(1,dt*10);p.x+=p.vx*dt;
+  const s=this.state,p=s.player;const desired=this.moveX*155*(this.time.season==="winter"?.9:this.time.weather==="heat"?.92:1);p.vx+=(desired-p.vx)*Math.min(1,dt*10);p.x+=p.vx*dt;
   for(const b of s.buildings){const solid=b.kind==="wall"||b.kind==="gate"||b.kind==="castle"||b.kind==="tower";if(solid&&dist(p.x,b.x)<48)p.x=b.x+(p.x<b.x?-48:48)}
   p.x=clamp(p.x,-2350,2350);p.facing=Math.abs(p.vx)>.5?(p.vx>0?1:-1):p.facing;p.animTime+=dt*Math.max(.4,Math.abs(p.vx)/90);
   if(Math.abs(p.vx)<2)p.stamina=clamp(p.stamina+24*dt,0,100);else p.stamina=clamp(p.stamina-8*dt,0,100);
@@ -133,3 +133,5 @@ export class WorldSimulation{
  }
 }
 function tweakState(s:GameState){if(!s.player){return}s.player.y??=0;s.player.vx??=0;s.player.vy??=0;s.player.animTime??=0;s.player.onGround??=true;for(const u of s.units){u.y??=0;u.vx??=0;u.animTime??=0}for(const a of s.animals){a.y??=0;a.vx??=0;a.animTime??=0;a.hunger??=0}for(const c of s.crops){c.health??=100;c.windPhase??=0}}
+
+function tweak(tm:TimeManager){return tm.season==="winter"?.9:tm.weather==="heat"?.92:1}
