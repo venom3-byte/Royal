@@ -1,2 +1,0 @@
-export function setGuardOrder(state,order,targetX=state.player.x,notify=()=>{}){for(const u of state.units)if(u.type==="guard"||u.type==="royalGuard"){u.order=order;u.orderTarget=targetX}notify("تم إصدار أمر الحرس: "+({defend:"دفاع",attack:"هجوم",escort:"مرافقة",return:"عودة"}[order]||order))}
-export function setRoyalFormation(state,formation,notify){if(!["circle","vanguard","spread"].includes(formation))return;state.player.formation=formation;notify("تشكيل الحرس الملكي: "+({circle:"دائري",vanguard:"أمامي",spread:"متباعد"}[formation]||formation))}
