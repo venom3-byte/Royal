@@ -1,16 +1,28 @@
 import {GameState} from "../core/Types";
 export class WorldGenerator{
  static make(seed=1337):GameState{
-  const buildings=[
+  const buildings:any=[
    {id:"keep",kind:"castle",x:0,level:1,hp:800,maxHp:800},
-   {id:"farm1",kind:"farm",x:250,level:1,hp:180,maxHp:180},
-   {id:"gateL",kind:"gate",x:-360,level:1,hp:350,maxHp:350},
-   {id:"gateR",kind:"gate",x:360,level:1,hp:350,maxHp:350},
-   {id:"yard",kind:"training",x:110,level:1,hp:220,maxHp:220}
+   {id:"farm1",kind:"farm",x:230,level:1,hp:160,maxHp:160},
+   {id:"gateL",kind:"gate",x:-360,level:1,hp:360,maxHp:360},
+   {id:"gateR",kind:"gate",x:360,level:1,hp:360,maxHp:360},
+   {id:"yard",kind:"training",x:115,level:1,hp:250,maxHp:250},
+   {id:"barn",kind:"barn",x:310,level:1,hp:240,maxHp:240}
   ];
-  const crops=[];for(let i=0;i<9;i++)crops.push({id:"c"+i,x:230+(i%3)*54,y:0,stage:i%2,age:i*9,kind:"wheat" as const,water:0});
-  const animals=[];for(let i=0;i<7;i++)animals.push({id:"a"+i,kind:(i<3?"sheep":i<5?"cow":"deer") as any,x:(i-3)*95,y:0,age:30+i*12,state:"graze",wild:i>=5});
-  const units=[{id:"u1",role:"farmer" as const,x:90,y:0,hp:70,rank:1,state:"work",homeX:90},{id:"u2",role:"builder" as const,x:150,y:0,hp:80,rank:1,state:"work",homeX:150}];
-  return {version:1,worldSeed:seed,time:0,seasonIndex:0,weather:"clear",resources:{coins:40,wood:80,stone:40,iron:10,food:30,meat:0,milk:0,fur:0},player:{x:0,y:0,health:100,stamina:100,facing:1,weapon:"sword"},buildings, crops, animals, units, enemies:[], flags:[-360,360], day:1};
+  const crops:any=[];for(let i=0;i<12;i++)crops.push({id:"c"+i,x:185+(i%4)*32,stage:(i%3) as 0|1|2,age:i*12,kind:"wheat",water:10});
+  const animals:any=[];for(let i=0;i<10;i++)animals.push({id:"a"+i,kind:i<4?"sheep":i<7?"cow":i===7?"horse":"deer",x:(i-5)*78,age:20+i*9,state:"graze",wild:i>=8});
+  const units:any=[
+   {id:"u1",role:"farmer",rank:1,x:90,hp:70,maxHp:70,state:"work",homeX:90},
+   {id:"u2",role:"builder",rank:1,x:150,hp:80,maxHp:80,state:"work",homeX:150},
+   {id:"u3",role:"villager",rank:1,x:-120,hp:70,maxHp:70,state:"idle",homeX:-120},
+   {id:"u4",role:"farmer",rank:1,x:175,hp:70,maxHp:70,state:"work",homeX:175}
+  ];
+  return{
+   version:2,worldSeed:seed,time:0,seasonIndex:0,weather:"clear",day:1,
+   resources:{coins:45,wood:120,stone:70,iron:18,food:45,meat:0,milk:0,fur:0,oil:20},
+   player:{x:0,health:100,stamina:100,facing:1,weapon:"sword",attackTimer:0},
+   buildings,crops,animals,units,enemies:[],projectiles:[],flags:[-360,360],
+   selectedBuild:"wall",wave:0,castleLevel:1
+  };
  }
 }
