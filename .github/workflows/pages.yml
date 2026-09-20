@@ -1,7 +1,5 @@
-name: Deploy Royal Shepherd Kingdom
+name: Royal Shepherd Kingdom
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
@@ -10,27 +8,28 @@ permissions:
   pages: write
   id-token: write
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Syntax check all modules
-        run: |
-          for f in $(find . -name '*.js' -not -path './node_modules/*'); do node --check "$f"; done
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
   deploy:
-    if: github.event_name != 'pull_request'
-    needs: check
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
       - id: deployment
         uses: actions/deploy-pages@v4
