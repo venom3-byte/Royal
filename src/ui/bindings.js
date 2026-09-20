@@ -1,4 +1,4 @@
-import {clearGame,loadGame,saveGame} from "../save.js";
+import {clearGame,loadGame,saveGame} from "../save.js";import {hydrateState} from "../state.js";
 import {build,upgradeCastle,recruit,addRoyalGuard,setGuardOrder,setRoyalFormation,fireCannon,cycleShell,boardWagon,interact,hunt} from "../systems.js";
 export function bindGameUI(state,audio,hud,menu,openRadial,closeRadial){
  const $=id=>document.getElementById(id);
@@ -6,7 +6,7 @@ export function bindGameUI(state,audio,hud,menu,openRadial,closeRadial){
  $("startBtn").onclick=()=>{state.running=true;$("start").style.display="none";notify("بدأت الحملة. استغل النهار قبل الليل.","dawn")};
  $("menu").onclick=()=>menu.open();$("closeMenu").onclick=()=>menu.close();
  $("save").onclick=()=>{saveGame(state);notify("تم حفظ الحملة في الهاتف.","coin");hud.sync(state)};
- $("load").onclick=()=>{const s=loadGame();if(s){Object.assign(state,s);notify("تم تحميل آخر حفظ.","coin")}else notify("لا يوجد حفظ سابق.");hud.sync(state);menu.refresh()};
+ $("load").onclick=()=>{const s=loadGame();if(s){Object.assign(state,hydrateState(s));notify("تم تحميل آخر حفظ.","coin")}else notify("لا يوجد حفظ سابق.");hud.sync(state);menu.refresh()};
  $("reset").onclick=()=>{clearGame();location.reload()};
  document.querySelectorAll("[data-build]").forEach(b=>b.onclick=()=>{build(state,b.dataset.build,notify);hud.sync(state)});
  $("upgradeCastle").onclick=()=>{upgradeCastle(state,notify);hud.sync(state)};
