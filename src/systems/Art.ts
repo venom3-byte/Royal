@@ -2,18 +2,31 @@ import Phaser from "phaser";
 
 function rect(g:Phaser.GameObjects.Graphics,c:number,x:number,y:number,w:number,h:number){g.fillStyle(c,1);g.fillRect(x,y,w,h)}
 function actor(scene:Phaser.Scene,key:string,colors:number[],frame:number,role:string){
- const g=scene.add.graphics();g.clear();const sway=frame%2?2:0;
- rect(g,0x000000,10+sway,51,22,27);rect(g,colors[2],14+sway,48,14,23);rect(g,colors[1],15+sway,26,18,24);
- g.fillStyle(colors[0],1);g.fillCircle(24+sway,18,10);
- rect(g,0x5a3b24,8+sway,6,32,7);
- if(role==="king"){rect(g,0xd8b43d,10+sway,3,28,5);rect(g,0x244a74,13+sway,31,22,19);rect(g,0xe8d6bd,7+sway,30,7,18);rect(g,0xe8d6bd,34+sway,30,7,18)}
- if(role==="guard"){rect(g,0x98a2aa,11+sway,25,26,28);rect(g,0x68737e,2+sway,29,9,25);rect(g,0xe6ddd0,35+sway,28,4,34)}
- if(role==="archer"){rect(g,0x5a3c29,11+sway,26,26,27);g.lineStyle(2,0xd5c28e);g.arc(39+sway,36,13,-1.1,1.1)}
- if(role==="farmer"){rect(g,0x6b4c2f,11+sway,26,26,27);rect(g,0x6d943c,16+sway,32,6,15)}
+ const g=scene.add.graphics();g.clear();const phase=[0,1,0,-1,0,1][frame%6];const walk=phase*(role==="king"?2:1);
+ rect(g,0x15171b,12+walk,66,8,8);rect(g,0x15171b,28-walk,66,8,8);
+ rect(g,colors[2],11+walk,48,10,19);rect(g,colors[2],27-walk,48,10,19);
+ rect(g,colors[1],13,27,22,24);
+ g.fillStyle(colors[0],1);g.fillCircle(24,18,10);
+ rect(g,0x5a3b24,8,6,32,7);
+ if(role==="king"){rect(g,0xd8b43d,10,3,28,5);rect(g,0x244a74,12,31,24,19);rect(g,0xe8d6bd,6,31,7,17);rect(g,0xe8d6bd,35,31,7,17);rect(g,0xb78b35,39,40,4,24)}
+ if(role==="guard"){rect(g,0x98a2aa,10,25,28,29);rect(g,0x68737e,2,29,9,25);rect(g,0xe6ddd0,36,28,4,34)}
+ if(role==="archer"){rect(g,0x6a5038,12,26,24,27);g.lineStyle(2,0xd5c28e);g.arc(39,36,13,-1.1,1.1);g.lineBetween(26,39,48,39)}
+ if(role==="farmer"){rect(g,0x6b4c2f,11,26,26,27);rect(g,0x6d943c,15,31,8,16)}
+ if(role==="villager"){rect(g,0x6c563a,12,26,24,27)}
  g.generateTexture(key+"_"+frame,48,80);g.destroy();
 }
+function animal(scene:Phaser.Scene,key:string,frame:number){
+ const g=scene.add.graphics();const p=[0,2,0,-2,0,2][frame%6];g.clear();
+ if(key==="horse"){g.fillStyle(0x8c5738);g.fillEllipse(42,29,66,30);g.fillEllipse(70,13,24,27);g.fillTriangle(74,4,81,0,84,12);g.fillStyle(0x2f2521);g.fillRect(18+p,42,7,14);g.fillRect(34-p,42,7,14);g.fillRect(66+p,41,7,15);g.fillRect(81-p,41,7,15);g.fillStyle(0x5a3828);g.fillRect(51,7,8,20)}
+ if(key==="cow"||key==="bull"){g.fillStyle(key==="bull"?0x7c624c:0xe2d7be);g.fillEllipse(42,28,68,31);g.fillStyle(key==="bull"?0x3d302b:0x5a4235);g.fillCircle(24,22,8);g.fillCircle(50,18,9);g.fillEllipse(78,25,20,15);g.fillStyle(0x3a2d28);g.fillRect(19+p,42,7,13);g.fillRect(36-p,42,7,13);g.fillRect(64+p,42,7,13);g.fillRect(80-p,42,7,13)}
+ if(key==="sheep"){g.fillStyle(0xf0eadc);g.fillCircle(31,27,19);g.fillCircle(49,23,16);g.fillStyle(0x3b3432);g.fillCircle(65,25,8);g.fillRect(22+p,40,5,12);g.fillRect(48-p,40,5,12)}
+ if(key==="deer"||key==="bison"){g.fillStyle(key==="bison"?0x5d4938:0x9d7147);g.fillEllipse(40,30,key==="bison"?70:57,26);g.fillEllipse(65,18,18,24);g.fillStyle(0x5d432f);g.fillRect(21+p,43,5,15);g.fillRect(56-p,43,5,15);g.lineStyle(2,0x8a6a49);g.lineBetween(67,5,62,0);g.lineBetween(67,7,73,0)}
+ if(key==="rabbit"){g.fillStyle(0xa98768);g.fillEllipse(35,35,30,22);g.fillCircle(52,25,9);g.fillRect(47,5,5,18);g.fillRect(55,4,5,19);g.fillStyle(0x30282a);g.fillCircle(56,23,2)}
+ if(key==="wolf"){g.fillStyle(0x4b4d54);g.fillEllipse(39,30,58,26);g.fillTriangle(63,18,72,6,77,24);g.fillTriangle(70,18,80,8,83,25);g.fillStyle(0x24252b);g.fillRect(19+p,42,6,15);g.fillRect(55-p,42,6,15)}
+ g.generateTexture(key+"_"+frame,100,64);g.destroy();
+}
 export function makeArt(scene:Phaser.Scene){
- for(let i=0;i<4;i++){actor(scene,"king",[0xe9c39b,0xf0d4b5,0x3f2d24],i,"king");actor(scene,"farmer",[0xe4bc96,0x9a6b45,0x3f3028],i,"farmer");actor(scene,"guard",[0xe0bb98,0x303946,0x20242c],i,"guard");actor(scene,"archer",[0xe2bb95,0x6a5038,0x3b302a],i,"archer");actor(scene,"villager",[0xe4bd99,0x6c563a,0x403229],i,"villager")}
+ for(let i=0;i<6;i++){actor(scene,"king",[0xe9c39b,0xf0d4b5,0x3f2d24],i,"king");actor(scene,"farmer",[0xe4bc96,0x9a6b45,0x3f3028],i,"farmer");actor(scene,"guard",[0xe0bb98,0x303946,0x20242c],i,"guard");actor(scene,"archer",[0xe2bb95,0x6a5038,0x3b302a],i,"archer");actor(scene,"villager",[0xe4bd99,0x6c563a,0x403229],i,"villager");for(const animalKey of ["horse","cow","bull","sheep","deer","bison","rabbit","wolf"])animal(scene,animalKey,i)}
  const g=scene.add.graphics();
  const tex=(key:string,w:number,h:number,draw:(g:Phaser.GameObjects.Graphics)=>void)=>{g.clear();draw(g);g.generateTexture(key,w,h)};
  tex("enemy",54,76,g=>{g.fillStyle(0x15121b);g.fillTriangle(8,18,17,2,25,17);g.fillTriangle(28,17,38,2,46,19);g.fillEllipse(27,39,38,42);g.fillStyle(0x9b2c36);g.fillRect(17,31,20,5);g.fillStyle(0x2c2430);g.fillRect(12,57,13,18);g.fillRect(29,57,13,18)});
