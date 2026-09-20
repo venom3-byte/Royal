@@ -1,0 +1,2 @@
+import {GameModel} from "../core/types";
+export function createGameModel():GameModel{return{time:0,day:1,season:0,weather:"clear",gold:140,wood:90,food:70,stone:35,iron:12,population:4,populationCap:14,castleLevel:1,castleHp:260,castleMaxHp:260,wave:0,running:false,gameOver:false,playerX:0,playerVx:0,playerFacing:1,royalGuardCount:0,notice:"ابنِ مملكتك قبل حلول الليل."}}
