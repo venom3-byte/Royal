@@ -3,7 +3,7 @@ export class GameScene extends Phaser.Scene{
  state:any;timeMgr!:TimeManager;sim!:WorldSimulation;world!:WorldRenderer;controls!:InputController;hud!:HUD;audio=new AudioSystem();save=new SaveManager();saveTimer=0;
  constructor(){super("Game")}
  create(){
-  makeArt(this);const loaded=this.save.load() as any;this.state=loaded&&loaded.version>=2?loaded:WorldGenerator.make((Date.now()/1000|0)&0xfffffff);
+  makeArt(this);const loaded=this.save.load() as any;this.state=loaded&&loaded.version>=3?loaded:WorldGenerator.make((Date.now()/1000|0)&0xfffffff);
   this.timeMgr=new TimeManager();this.timeMgr.elapsed=this.state.time||0;this.timeMgr.seasonIndex=this.state.seasonIndex||0;this.timeMgr.weather=this.state.weather||"clear";
   this.sim=new WorldSimulation(this.state,this.timeMgr);this.controls=new InputController(this);this.world=new WorldRenderer(this,this.state,this.timeMgr);this.hud=new HUD(this,this.state,this.timeMgr);
   this.timeMgr.onPhase=p=>{if(p==="night")this.audio.night()};this.timeMgr.onSeason=()=>this.audio.build()
