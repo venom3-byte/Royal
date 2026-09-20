@@ -1,0 +1,1 @@
+import {GameState} from "./Types";const KEY="royal-shepherd-save-v1";export class SaveManager{save(s:GameState){try{localStorage.setItem(KEY,JSON.stringify(s));return true}catch{return false}}load():GameState|null{try{const x=localStorage.getItem(KEY);return x?JSON.parse(x):null}catch{return null}}clear(){localStorage.removeItem(KEY)}}
