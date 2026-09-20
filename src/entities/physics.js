@@ -1,0 +1,1 @@
+export function resolveActorBounds(state){for(const u of state.units){u.x=Math.max(state.player.x-900,Math.min(state.player.x+900,u.x))}for(const a of state.animals)a.x=Math.max(-12000,Math.min(12000,a.x));for(const e of state.enemies)e.x=Math.max(-12000,Math.min(12000,e.x))}
