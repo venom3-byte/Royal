@@ -54,7 +54,7 @@ export class WorldRenderer{
   let o=this.objs.get(id);
   if(!o){o=this.scene.add.image(x,G,key+"_0" in this.scene.textures.list?key+"_0":key).setOrigin(.5,1).setDepth(kind==="wolf"||kind==="rabbit"||kind==="deer"||kind==="bison"?17:20);this.objs.set(id,o)}
   if(["guard","archer","farmer","villager"].includes(key))o.setTexture(key+"_"+this.frame(animTime,Math.abs(vx),combat));else if(["cow","bull","sheep","horse","deer","bison","rabbit","wolf"].includes(key))o.setTexture(key+"_"+this.frame(animTime,Math.abs(vx),false));
-  o.setPosition(x,G).setFlipX(vx<0).setAlpha(combat&&key==="enemy"?.98:1);
+  o.setPosition(x,G).setFlipX(vx<0).setAlpha((combat&&key==="enemy")?.98:1);
  }
  private syncCrop(id:string,x:number,stage:number,wind:number){let o=this.crops.get(id);if(!o){o=this.scene.add.image(x,G+5,"crop"+stage).setOrigin(.5,1).setDepth(6);this.crops.set(id,o)}o.setTexture("crop"+stage).setPosition(x,G+5);o.setAngle(this.time.weather==="wind"?Math.sin(this.t*.07+wind)*4:Math.sin(this.t*.025+wind)*1.5)}
  private syncProjectile(id:string,x:number,y:number,kind:string,vx:number,vy:number){let o=this.projectiles.get(id);if(!o){o=this.scene.add.image(x,y,kind==="cannon"?"rock":"coin").setOrigin(.5).setDepth(25);this.projectiles.set(id,o)}o.setPosition(x,y).setRotation(Math.atan2(vy,vx))}
