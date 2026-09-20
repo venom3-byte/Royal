@@ -1,0 +1,3 @@
+export function updateWagon(state,dt){if(!state.wagon.unlocked){state.wagon.active=false;return}if(state.wagon.active){state.wagon.x=state.player.x;state.wagon.wheelAngle+=dt*(state.player.speed>3?6:1)}}
+export function boardWagon(state,notify){if(!state.wagon.unlocked)return notify("ابنِ الإسطبل أولًا.");state.wagon.active=!state.wagon.active;state.player.mode=state.wagon.active?"wagon":"foot";notify(state.wagon.active?"ركب الملك العربة.":"ترجل الملك.")}
+function ground(){return 700}
