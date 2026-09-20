@@ -119,7 +119,7 @@ function feedRate(a){return a.type==="bull"?1.5:a.type==="cow"?1:a.type==="sheep
 export function updateLivestock(state,dt){
  const dusk=currentPhase(state).id==="dusk"||currentPhase(state).id==="night";
  for(const a of state.animals){
-  a.age+=dt/600;a.hunger+=dt*feedRate(a)/80;
+  a.age+=dt/600;a.hunger+=dt*feedRate(a)/80;if(a.type==="sheep")a.wool=cl(a.wool+dt*(100/900)*seasonData(state).growth,0,100);
   if(dusk)a.state="home";else a.state="graze";
   a.x+=Math.sin(state.time*.7+a.id)*dt*(a.type==="bull"?2.5:5);
   if(a.hunger>.85){a.health=cl(a.health-dt*.35,0,100);a.stress=cl(a.stress+dt*.02,0,100)}
@@ -200,7 +200,7 @@ export function damageEnemy(state,e,damage,kind,sound){
  if(e.hp<=0){state.resources.gold+=e.type==="brute"?14:7;state.score+=e.type==="brute"?25:10;state.stats.kills++;state.enemies.splice(state.enemies.indexOf(e),1);sound?.event("hit")}
 }
 
-function enemyTarget(state,e){return nearest([...state.units.filter(u=>u.type==="guard"||u.type==="royalGuard"),...state.buildings.filter(b=>b.type==="wall"||b.type==="tower"),{x:state.player.x,type:"king"}],e.x)}
+function enemyTarget(state,e){return nearest([...state.units.filter(u=>(u.type==="guard"||u.type==="royalGuard")&&u.hp>0),...state.buildings.filter(b=>(b.type==="wall"||b.type==="tower")&&b.hp>0),{x:state.player.x,type:"king"}],e.x)}
 export function updateEnemies(state,dt,sound){
  for(const e of state.enemies){
   e.attackCooldown=Math.max(0,e.attackCooldown-dt);e.stagger=Math.max(0,e.stagger-dt);
@@ -309,6 +309,7 @@ export function interact(state,sound){
  }
  const farm=nearest(state.buildings.filter(b=>b.type==="farm"),state.player.x);if(farm&&distance(farm.x,state.player.x)<120){const c=nearest(state.crops.filter(c=>c.ready),state.player.x);if(c){state.resources.food+=CROPS[c.type].base;state.stats.harvests++;c.progress=0;c.stage=0;c.ready=false;notify(state,"حصدت محصولًا جاهزًا.","coin");sound?.event("coin");return "harvest"}}
  const cannon=nearest(state.buildings.filter(b=>b.type==="cannon"),state.player.x);if(cannon&&distance(cannon.x,state.player.x)<170){fireCannon(state,sound);return "cannon"}
+ const slaughter=nearest(state.buildings.filter(b=>b.type==="slaughterhouse"),state.player.x);if(slaughter&&distance(slaughter.x,state.player.x)<170){butchering(state,sound);return "butcher"}
  const animal=nearest(state.animals,state.player.x);if(animal&&distance(animal.x,state.player.x)<90){milkOrShear(state,sound);return "animal"}
  const worker=nearest(state.units.filter(u=>u.type==="worker"||u.type==="farmer"),state.player.x);if(worker&&distance(worker.x,state.player.x)<85){recruit(state,"guard",sound);return "recruit"}
  return null;
@@ -325,6 +326,7 @@ export function tick(state,dt,sound){
  updateAgriculture(state,dt);
  updateLivestock(state,dt);
  cullHungryAnimals(state);
+ const deadUnits=state.units.filter(u=>u.hp<=0);for(const u of deadUnits){state.population.used=Math.max(0,state.population.used-1);if(u.type==="guard"||u.type==="royalGuard")notify(state,"سقط أحد حماة المملكة.");state.units.splice(state.units.indexOf(u),1)}
  updateUnits(state,dt,sound);
  updateEnemies(state,dt,sound);
  updateProjectiles(state,dt,sound);

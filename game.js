@@ -1,6 +1,6 @@
 import {createState,hydrateState,saveState,loadState} from "./src/state.js";
 import {DAY_LENGTH,SEASON_LENGTH,SEASONS,WEATHER,BUILDINGS,SHELLS,ROYAL_FORMATIONS,QUALITY} from "./src/config.js";
-import {tick,build,upgradeCastle,recruit,addRoyalGuard,setGuardOrder,setRoyalFormation,fireCannon,cycleShell,boardWagon,interact,notify,currentPhase,seasonData} from "./src/systems.js";
+import {tick,build,upgradeCastle,recruit,addRoyalGuard,setGuardOrder,setRoyalFormation,fireCannon,cycleShell,boardWagon,interact,hunt,notify,currentPhase,seasonData} from "./src/systems.js";
 import {createRenderer} from "./src/renderer.js";
 import {SoundSystem} from "./src/audio.js";
 import {setupInput} from "./src/input.js";
@@ -61,6 +61,7 @@ document.querySelectorAll("[data-build]").forEach(b=>b.onclick=()=>{build(state,
 document.getElementById("upgradeCastle").onclick=()=>{upgradeCastle(state,audio);sync()};
 document.getElementById("recruitGuard").onclick=()=>{recruit(state,"guard",audio);sync()};
 document.getElementById("recruitHunter").onclick=()=>{recruit(state,"hunter",audio);sync()};
+document.getElementById("hunt").onclick=()=>{hunt(state,audio);sync()};
 document.getElementById("royalGuard").onclick=()=>{addRoyalGuard(state,audio);sync()};
 document.getElementById("wagon").onclick=()=>{boardWagon(state);sync()};
 document.getElementById("cannonShell").onclick=()=>{cycleShell(state);sync()};
