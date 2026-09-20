@@ -1,0 +1,1 @@
+declare global{interface Window{RSK_ASSETS?:Record<string,string>}}export{}
