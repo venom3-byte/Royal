@@ -1,0 +1,6 @@
+import {clamp,dist} from "../utils/math.js";
+export function spawnNightWave(state,makeEnemy,notify){const count=Math.min(2+Math.floor(state.day*.45),10);for(let i=0;i<count;i++){const side=Math.random()<.5?-1:1;const brute=Math.random()<Math.min(.1+state.day*.012,.3);state.enemies.push(makeEnemy(brute?"brute":"greed",state.player.x+side*(520+Math.random()*280),state.day))}notify("موجة الليل وصلت: "+count+" عدو.")}
+export function updateEnemies(state,dt,api){
+ for(const e of state.enemies){e.attackCooldown=Math.max(0,e.attackCooldown-dt);e.stagger=Math.max(0,e.stagger-dt);e.anim=e.stagger>0?"hurt":"walk";const target=api.enemyTarget(e);if(!target)continue;const d=dist(target.x,e.x);if(e.stagger<=0)e.x+=Math.sign(target.x-e.x)*e.speed*dt*api.seasonNightMultiplier();if(d<54&&e.attackCooldown<=0){e.attackCooldown=e.type==="brute"?1.25:.85;api.damageTarget(target,e.type==="brute"?12:6)}e.x=clamp(e.x,state.player.x-1000,state.player.x+1000)}
+}
+export function damageEnemy(state,e,damage,kind="normal",emitEffect=()=>{}){if(!e)return;e.hp-=damage;e.stagger=.18;emitEffect(e.x,"hit");if(e.hp<=0){state.resources.gold+=e.type==="brute"?14:7;state.score+=e.type==="brute"?25:10;state.stats.kills++;state.enemies.splice(state.enemies.indexOf(e),1);emitEffect(e.x,"death");return true}return false}
