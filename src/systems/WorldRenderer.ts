@@ -29,7 +29,7 @@ export class WorldRenderer{
  render(){
   this.t++;const s=this.state;
   for(const b of s.buildings)this.syncBuilding(b.id,b.x,b.kind,b.level);
-  for(const u of s.units)this.syncActor(u.id,u.x,u.role,u.rank,u.state,u.vx,u.animTime);
+  for(const u of s.units)this.syncActor(u.id,u.x,u.role,u.rank,u.state==="fight",u.vx,u.animTime);
   for(const a of s.animals)if(Math.abs(a.x-s.player.x)<780)this.syncActor(a.id,a.x,a.kind,1,a.state==="flee",a.vx,a.animTime);
   for(const e of s.enemies)this.syncActor(e.id,e.x,e.kind,e.kind==="brute"?4:1,true,e.x-s.player.x, s.time);
   for(const c of s.crops)this.syncCrop(c.id,c.x,c.stage,c.windPhase);
