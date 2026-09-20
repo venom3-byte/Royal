@@ -151,7 +151,7 @@ export function butchering(state,sound){
 export function milkOrShear(state,sound){
  const a=nearest(state.animals,state.player.x);if(!a)return notify(state,"لا يوجد حيوان قريب.");
  if(a.type==="cow"){if(a.milkCooldown>0)return notify(state,"هذه البقرة حُلِبت بالفعل.");state.resources.milk+=3;a.milkCooldown=DAY_LENGTH*.5;notify(state,"تم حلب البقرة.","animal");sound?.event("animal");return}
- if(a.type==="sheep"){if(a.wool>=100)return notify(state,"الصوف لم يكتمل نموه.");state.resources.wool+=2;a.wool=0;notify(state,"تم جز صوف الخروف.","animal");sound?.event("animal");return}
+ if(a.type==="sheep"){if(a.wool<80)return notify(state,"الصوف لم يكتمل نموه.");state.resources.wool+=2;a.wool=0;notify(state,"تم جز صوف الخروف.","animal");sound?.event("animal");return}
  notify(state,"لا يوجد عمل مناسب لهذا الحيوان.");
 }
 
@@ -183,7 +183,7 @@ export function updateProjectiles(state,dt,sound){
     if(p.y>=hitY||p.life<=0){explodeCannon(state,p,sound);p.life=0}
   }else{
     p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;if(p.life<=0)continue;
-    const hit=state.enemies.find(e=>Math.abs(e.x-p.x)<28&&Math.abs(e.y-p.y)<45);if(hit){damageEnemy(state,hit,p.damage||8,p.kind==="bolt"?"pierce":"normal",sound);p.life=0}
+    const hit=state.enemies.find(e=>Math.abs(e.x-p.x)<28&&Math.abs((e.y??(groundY(700)-48))-p.y)<55);if(hit){damageEnemy(state,hit,p.damage||8,p.kind==="bolt"?"pierce":"normal",sound);p.life=0}
   }
  }
  state.projectiles=state.projectiles.filter(p=>p.life>0);
@@ -315,9 +315,10 @@ export function interact(state,sound){
 }
 
 export function tick(state,dt,sound){
+ const beforeNight=isNight(state);
  const change=updateTime(state,dt,sound);
  if(!state.running||state.paused||state.gameOver)return;
- if(change.dayChanged)spawnNightWave(state,sound);
+ if(!beforeNight&&isNight(state))spawnNightWave(state,sound);
  if(change.dayChanged)for(const e of state.enemies)e.hp+=1;
  trainAndPromote(state,sound);
  updateEconomy(state,dt,change.dayChanged);

@@ -1,5 +1,5 @@
 import {TAU,WEATHER,SEASONS,BUILDINGS,LIVESTOCK,SHELLS,QUALITY} from "./config.js";
-import {groundY,phase as unusedPhase} from "./systems.js";
+import {groundY} from "./systems.js";
 
 export function createRenderer(canvas,assets){
  const ctx=canvas.getContext("2d",{alpha:false});
