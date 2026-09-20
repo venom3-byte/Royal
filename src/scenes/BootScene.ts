@@ -1,0 +1,1 @@
+import * as Phaser from "phaser";export class BootScene extends Phaser.Scene{constructor(){super("BootScene")}preload(){for(const [key,url] of Object.entries(window.RSK_ASSETS||{}))this.load.image(key,url)}create(){this.scene.start("WorldScene")}}
