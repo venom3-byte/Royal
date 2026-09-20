@@ -1,10 +1,10 @@
 import {UNIT_RANKS,WEAPONS} from "../config.js";
-import {clamp,dist} from "../utils/math.js";
+import {clamp,dist} from "../utils/math.js";import {advanceAnimation} from "../core/animation.js";
 export function updateUnits(state,dt,api){
  const units=state.units, playerX=state.player.x, night=api.isNight();
  for(const u of units){
   if(u.hp<=0)continue;
-  u.animation?.update(dt);
+  advanceAnimation(u,dt);
   if(u.attackCooldown>0)u.attackCooldown-=dt;
   const target=api.nearest(state.enemies,u.x);
   let speed=10;
