@@ -1,2 +1,2 @@
-export type UnitKind="worker"|"farmer"|"guard"|"archer"|"royalGuard";export type SeasonId="spring"|"summer"|"autumn"|"winter";
+export type UnitKind="worker"|"farmer"|"guard"|"archer"|"royalGuard";
 export interface GameModel{time:number;day:number;season:number;weather:keyof typeof import("./constants").WEATHER;gold:number;wood:number;food:number;stone:number;iron:number;population:number;populationCap:number;castleLevel:number;castleHp:number;castleMaxHp:number;wave:number;running:boolean;gameOver:boolean;playerX:number;playerVx:number;playerFacing:number;royalGuardCount:number;notice:string}
