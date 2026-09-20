@@ -111,10 +111,9 @@ export class WorldSimulation{
  }
  place(){
   const s=this.state,c=BUILD_COSTS[s.selectedBuild];if(!Object.entries(c).every(([k,v])=>(s.resources as any)[k]>=(v as number)))return;
-  for(const [k,v] of Object.entries(c))if(v)(s.resources as any)[k]-=v as number;
   const hp:any={wall:180,tower:260,farm:160,barn:240,blacksmith:260,training:250,house:180,cannon:220};
-  const x=Math.round((s.player.x+s.player.facing*120)/10)*10;
-  if(s.buildings.some(b=>dist(b.x,x)<70))return;
+  const x=Math.round((s.player.x+s.player.facing*120)/10)*10;if(s.buildings.some(b=>dist(b.x,x)<70))return;
+  for(const [k,v] of Object.entries(c))if(v)(s.resources as any)[k]-=v as number;
   s.buildings.push({id:"b"+Date.now()+Math.random(),kind:s.selectedBuild,x,level:1,hp:hp[s.selectedBuild],maxHp:hp[s.selectedBuild]});
  }
  castleUpgrade(){
