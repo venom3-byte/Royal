@@ -1,0 +1,5 @@
+import {King} from "../entities/King";
+export class TouchController{left=false;right=false;constructor(private king:King){const button=(text:string,dir:number)=>{const b=document.createElement("button");b.className="rsk-btn";b.textContent=text;b.addEventListener("pointerdown",e=>{e.preventDefault();if(dir<0)this.left=true;else this.right=true});for(const ev of ["pointerup","pointercancel","pointerleave"])b.addEventListener(ev,()=>{if(dir<0)this.left=false;else this.right=false});return b};this.leftButton=button("◀",-1);this.rightButton=button("▶",1)}
+leftButton:HTMLButtonElement;rightButton:HTMLButtonElement;
+mount(root:HTMLElement){const box=document.createElement("div");box.className="rsk-row";box.append(this.leftButton,this.rightButton);root.append(box)}
+update(){const d=this.left?-1:this.right?1:0;if(d)this.king.move(d);else this.king.stop()}}
