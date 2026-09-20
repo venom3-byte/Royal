@@ -333,4 +333,6 @@ export function tick(state,dt,sound){
  updateParticles(state,dt);
  updateWagon(state,dt);
  updateCastle(state);
+ state.camera.x += (state.player.x-state.camera.x)*Math.min(1,dt*6);
+ if(state.player.moving)state.player.x += state.player.moving*dt*150;
 }
