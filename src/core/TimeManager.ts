@@ -1,1 +1,16 @@
-import {EventEmitter} from "eventemitter3";import {SEASONS,Season,Phase,Weather} from "./Types";export class TimeManager extends EventEmitter{static readonly CYCLE=300;static readonly SEASON=600;elapsed=0;seasonIndex=0;weather:Weather="clear";weatherAge=0;update(dt:number){const a=this.phase,b=this.season;this.elapsed=(this.elapsed+dt)%TimeManager.SEASON;this.weatherAge+=dt;if(this.weatherAge>120){this.weatherAge=0;const pool:Weather[]=this.season==="winter"?["snow","fog","clear"]:this.season==="spring"?["rain","fog","clear"]:this.season==="autumn"?["wind","clear","fog"]:["clear","heat","rain"];this.weather=pool[Math.floor(Math.random()*pool.length)];this.emit("weather",this.weather)}if(a!==this.phase)this.emit("phase",this.phase);if(b!==this.season)this.emit("season",this.season)}get season():Season{return SEASONS[Math.floor(this.seasonIndex%4)]}get cycleTime(){return this.elapsed%300}get phase():Phase{const t=this.cycleTime;return t<30?"dawn":t<180?"day":t<210?"dusk":"night"}get day(){return Math.floor(this.elapsed/300)+1}serialize(){return{elapsed:this.elapsed,seasonIndex:this.seasonIndex,weather:this.weather,weatherAge:this.weatherAge}}restore(v:any){if(!v)return;this.elapsed=Number(v.elapsed)||0;this.seasonIndex=Number(v.seasonIndex)||0;this.weather=v.weather||"clear";this.weatherAge=Number(v.weatherAge)||0}}
+import {SEASONS,Season,Phase,Weather} from "./Types";
+export class TimeManager{
+ static readonly CYCLE=300;
+ static readonly SEASON=600;
+ elapsed=0;seasonIndex=0;weather:Weather="clear";weatherAge=0;
+ onPhase:(p:Phase)=>void=()=>{};onSeason:(s:Season)=>void=()=>{};
+ update(dt:number){const oldP=this.phase,oldS=this.season;this.elapsed=(this.elapsed+dt)%TimeManager.SEASON;this.weatherAge+=dt;
+  if(this.weatherAge>=120){this.weatherAge=0;const pool:Weather[]=this.season==="winter"?["snow","fog","clear"]:this.season==="spring"?["rain","fog","clear"]:this.season==="autumn"?["wind","clear","fog"]:["clear","heat","rain"];this.weather=pool[Math.floor(Math.random()*pool.length)]}
+  if(oldP!==this.phase)this.onPhase(this.phase);if(oldS!==this.season)this.onSeason(this.season)
+ }
+ get season():Season{return SEASONS[Math.floor(this.seasonIndex%4)]}
+ get cycleTime(){return this.elapsed%TimeManager.CYCLE}
+ get phase():Phase{const t=this.cycleTime;return t<30?"dawn":t<180?"day":t<210?"dusk":"night"}
+ get day(){return Math.floor(this.elapsed/TimeManager.CYCLE)+1}
+ get phaseProgress(){const t=this.cycleTime;return t<30?t/30:t<180?(t-30)/150:t<210?(t-180)/30:(t-210)/90}
+}
