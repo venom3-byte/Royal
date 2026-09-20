@@ -1,5 +1,4 @@
 export const GAME_WIDTH=1280, GAME_HEIGHT=720, WORLD_MIN=-12000, WORLD_MAX=12000, DAY_LENGTH=300, SEASON_LENGTH=600;
 export const PHASES=[{id:"dawn",start:0,end:30,name:"الفجر"},{id:"day",start:30,end:180,name:"النهار"},{id:"dusk",start:180,end:210,name:"الغروب"},{id:"night",start:210,end:300,name:"الليل"}] as const;
 export const SEASONS=[{id:"spring",name:"ربيع",growth:1.15,night:1,weather:["clear","rain","fog"]},{id:"summer",name:"صيف",growth:1,night:1.05,weather:["clear","clear","heat","rain"]},{id:"autumn",name:"خريف",growth:.8,night:1.15,weather:["clear","wind","rain","fog"]},{id:"winter",name:"شتاء",growth:0,night:1.3,weather:["snow","snow","clear","wind"]}] as const;
-export const WEATHER={clear:{name:"صحو",growth:1,wind:0},rain:{name:"مطر",growth:1.15,wind:.15},fog:{name:"ضباب",growth:1.02,wind:0},wind:{name:"رياح",growth:.95,wind:1},snow:{name:"ثلج",growth:.55,wind:.2},heat:{name:"حر",growth:.82,wind:0}} as const;
-export type WeatherId=keyof typeof WEATHER;
+export const WEATHER={clear:{name:"صحو",growth:1,wind:0},rain:{name:"مطر",growth:1.15,wind:.15},fog:{name:"ضباب",growth:1.02,wind:0},wind:{name:"رياح",growth:.95,wind:1},snow:{name:"ثلج",growth:.55,wind:.2},heat:{name:"حر",growth:.82,wind:0}} as const;export type WeatherId=keyof typeof WEATHER;
