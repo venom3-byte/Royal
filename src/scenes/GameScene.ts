@@ -1,9 +1,37 @@
-import Phaser from "phaser";import {WorldGenerator} from "../world/WorldGenerator";import {TimeManager} from "../core/TimeManager";import {SaveManager} from "../core/SaveManager";import {WorldSimulation} from "../systems/WorldSimulation";import {WorldRenderer} from "../systems/WorldRenderer";import {InputController} from "../systems/InputController";import {HUD} from "../ui/HUD";import {makeArt} from "../systems/Art";
+import Phaser from "phaser";
+import {WorldGenerator} from "../world/WorldGenerator";
+import {TimeManager} from "../core/TimeManager";
+import {SaveManager} from "../core/SaveManager";
+import {WorldSimulation} from "../systems/WorldSimulation";
+import {WorldRenderer} from "../systems/WorldRenderer";
+import {InputController} from "../systems/InputController";
+import {AudioSystem} from "../systems/AudioSystem";
+import {HUD} from "../ui/HUD";
+import {makeArt} from "../systems/Art";
+
 export class GameScene extends Phaser.Scene{
- state:any;timeMgr!:TimeManager;sim!:WorldSimulation;worldRenderer!:WorldRenderer;controls!:InputController;hud!:HUD;save=new SaveManager();
+ state:any;timeMgr!:TimeManager;sim!:WorldSimulation;world!:WorldRenderer;controls!:InputController;hud!:HUD;audio=new AudioSystem();save=new SaveManager();saveTimer=0;
  constructor(){super("Game")}
- create(){makeArt(this);const loaded=this.save.load();this.state=loaded||WorldGenerator.make(Date.now()&0xfffffff);this.timeMgr=new TimeManager();this.timeMgr.elapsed=this.state.time;this.timeMgr.seasonIndex=this.state.seasonIndex;this.timeMgr.weather=this.state.weather;this.sim=new WorldSimulation(this.state,this.timeMgr);this.controls=new InputController(this);this.worldRenderer=new WorldRenderer(this,this.state,this.timeMgr);const p=this.add.image(this.state.player.x,500,"king").setOrigin(.5,1).setDepth(20);this.worldRenderer.objects.set("player",p);this.hud=new HUD(this,this.state,this.timeMgr);this.cameras.main.setBounds(-1500,0,3000,720);this.controls.update()}
- update(){const dt=Math.min(.05,this.game.loop.delta/1000);this.controls.update();this.sim.moveX=this.controls.moveX;this.sim.update(dt);if(this.controls.consumeAttack())this.attack();if(this.controls.consumeCoin())this.throwCoin();this.worldRenderer.render();this.hud.update();if(this.game.loop.frame%300===0)this.save.save(this.state)}
- attack(){const p=this.state.player;const range=p.weapon==="spear"?105:75;for(const e of this.state.enemies)if(Math.abs(e.x-p.x)<range)e.hp-=p.weapon==="axe"?30:22}
- throwCoin(){if(this.state.resources.coins<=0)return;this.state.resources.coins--;const coin=this.add.image(this.state.player.x+this.state.player.facing*70,410,"coin").setDepth(30);this.tweens.add({targets:coin,y:350,duration:250,ease:"Quad.easeOut",yoyo:true,onComplete:()=>coin.destroy()})}
+ create(){
+  makeArt(this);
+  const loaded=this.save.load() as any;
+  this.state=loaded&&loaded.version>=2?loaded:WorldGenerator.make((Date.now()/1000|0)&0xfffffff);
+  this.timeMgr=new TimeManager();this.timeMgr.elapsed=this.state.time||0;this.timeMgr.seasonIndex=this.state.seasonIndex||0;this.timeMgr.weather=this.state.weather||"clear";
+  this.sim=new WorldSimulation(this.state,this.timeMgr);this.controls=new InputController(this);this.world=new WorldRenderer(this,this.state,this.timeMgr);this.hud=new HUD(this,this.state,this.timeMgr);
+  this.timeMgr.onPhase=p=>{if(p==="night")this.audio.night()};this.timeMgr.onSeason=()=>this.audio.build();
+  this.input.keyboard?.on("keydown",()=>this.audio.tone(420,.025,"square",.01));
+ }
+ update(){
+  const dt=Math.min(.05,this.game.loop.delta/1000);
+  this.controls.update();
+  const didAttack=this.controls.consumeAttack(),didCoin=this.controls.consumeCoin(),didBuild=this.controls.consumeBuild();
+  this.sim.moveX=this.controls.moveX;this.sim.attack=didAttack;this.sim.coin=didCoin;this.sim.build=didBuild;this.sim.state.selectedBuild=this.controls.selectedBuild;
+  const before=this.state.resources.coins;
+  this.sim.update(dt);
+  if(didAttack&&before!==this.state.resources.coins)this.audio.hit();
+  if(didCoin)this.audio.coin();
+  if(didBuild)this.audio.build();
+  this.world.render();this.hud.update();
+  this.saveTimer+=dt;if(this.saveTimer>8){this.saveTimer=0;this.save.save(this.state)}
+ }
 }
