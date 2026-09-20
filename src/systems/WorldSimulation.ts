@@ -15,7 +15,8 @@ export class WorldSimulation{
  }
  player(dt:number){
   const s=this.state,p=s.player;const desired=this.moveX*155*(tweak(this.time));p.vx+=(desired-p.vx)*Math.min(1,dt*10);p.x+=p.vx*dt;
-  for(const b of s.buildings){const solid=b.kind==="wall"||b.kind==="gate"||b.kind==="castle"||b.kind==="tower";if(solid&&dist(p.x,b.x)<48)p.x=b.x+(p.x<b.x?-48:48)}\n  p.x=clamp(p.x,-2350,2350);p.facing=Math.abs(p.vx)>.5?(p.vx>0?1:-1):p.facing;p.animTime+=dt*Math.max(.4,Math.abs(p.vx)/90);
+  for(const b of s.buildings){const solid=b.kind==="wall"||b.kind==="gate"||b.kind==="castle"||b.kind==="tower";if(solid&&dist(p.x,b.x)<48)p.x=b.x+(p.x<b.x?-48:48)}
+  p.x=clamp(p.x,-2350,2350);p.facing=Math.abs(p.vx)>.5?(p.vx>0?1:-1):p.facing;p.animTime+=dt*Math.max(.4,Math.abs(p.vx)/90);
   if(Math.abs(p.vx)<2)p.stamina=clamp(p.stamina+24*dt,0,100);else p.stamina=clamp(p.stamina-8*dt,0,100);
   p.attackTimer=Math.max(0,p.attackTimer-dt);
  }
@@ -28,7 +29,8 @@ export class WorldSimulation{
    u.vx=(target===undefined?0:clamp(target-u.x,-speed,speed));
    u.x+=u.vx*dt;u.y=0;
    if(Math.abs(u.vx)>4)u.state=u.role==="guard"||u.role==="archer"?"patrol":"work";else if(u.role==="farmer"||u.role==="builder")u.state="work";else u.state="idle";
-   for(const other of s.units){if(other===u)continue;const d=u.x-other.x;if(Math.abs(d)<24&&Math.abs(d)>0.1){u.x+=d>0?3:-3}}\n   const e=this.closestEnemy(u.x);if(e&&dist(e.x,u.x)<120){u.state="fight";u.vx=0;if(u.role==="guard")e.hp-=dt*(10+u.rank*5);if(u.role==="archer"&&Math.random()<dt*.8)this.arrow(u.x,52,e.x)}
+   for(const other of s.units){if(other===u)continue;const d=u.x-other.x;if(Math.abs(d)<24&&Math.abs(d)>0.1){u.x+=d>0?3:-3}}
+   const e=this.closestEnemy(u.x);if(e&&dist(e.x,u.x)<120){u.state="fight";u.vx=0;if(u.role==="guard")e.hp-=dt*(10+u.rank*5);if(u.role==="archer"&&Math.random()<dt*.8)this.arrow(u.x,52,e.x)}
   }
   this.trainTimer+=dt;if(this.trainTimer>22){this.trainTimer=0;const yard=s.buildings.find(b=>b.kind==="training");const v=s.units.find(u=>u.role==="villager"&&yard&&dist(u.x,yard.x)<120);if(v&&s.resources.iron>=3){s.resources.iron-=3;v.role="guard";v.rank=1;v.state="patrol"}}
  }
