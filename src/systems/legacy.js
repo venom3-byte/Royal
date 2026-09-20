@@ -1,0 +1,1 @@
+export function groundY(H){return H*.72}export const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
