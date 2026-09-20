@@ -1,2 +1,1 @@
-import {defineConfig} from "vite";
-export default defineConfig({base:"/Royal/",build:{target:"es2022",sourcemap:false}});
+import {defineConfig} from "vite";export default defineConfig({base:"/Royal/",build:{target:"es2022",sourcemap:false}});
